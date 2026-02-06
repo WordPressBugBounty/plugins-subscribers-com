@@ -6,15 +6,32 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.5.4
-screenshot.png
-subscribers.php
+Version: 1.6
+Requires at least: 5.2
+Requires PHP: 7.4
 Author URI: https://subscribers.com
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 This relies on the actions being present in the themes header.php and footer.php
 * header.php code before the closing </head> tag
 *   wp_head();
 *
+Copyright (C) 2025 Subscribers.com
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 //------------------------------------------------------------------------//
@@ -46,7 +63,7 @@ add_action( 'admin_notices', 'subscribers_warn_nosettings' );
 //------------------------------------------------------------------------//
 // options page link
 function subscribers_plugin_menu() {
-  add_options_page('Subscribers', 'Subscribers', 'create_users', 'subscribers_options', 'subscribers_plugin_options');
+  add_options_page('Subscribers', 'Subscribers', 'manage_options', 'subscribers_options', 'subscribers_plugin_options');
 }
 
 // whitelist settings
@@ -140,7 +157,7 @@ function subscribers_plugin_options() {
     <a target="_blank" href="https://app.subscribers.com/users/signup">sign up here</a> if you do not already have one.
   </p>
   <p>
-    Once you sign in to your Subscribers account please visit <a target="_blank" href="https://app.subscribersdemo.com/settings/edit">this page</a> and copy that <b>Site ID</b> and paste it into the field
+    Once you sign in to your Subscribers account please visit <a target="_blank" href="https://app.subscribers.com/settings">this page</a> and copy that <b>Site ID</b> and paste it into the field
     below and click Save changes.
   </p>
 
@@ -199,7 +216,10 @@ function subscribers_plugin_options() {
 }
 
 function swpush_sanitize($input, $encoding='UTF-8'){
-  return htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, $encoding);
+  if ($input === null || $input === false) {
+    return '';
+  }
+  return htmlspecialchars((string)$input, ENT_QUOTES | ENT_HTML5, $encoding);
 }
 
 function subscribers_warn_nosettings(){

@@ -1,10 +1,11 @@
 === Subscribers - Free Web Push Notifications ===
 
-Contributors: subscribers
-Tags: web push, web push notifications, notifications, subscribe, subscriber, subscribers, notification, chrome push, desktop notifications, push notifications, push notification, mobile notifications, firefox, firefox push, mobile, mobile notification, notify, onesignal, push, push messages, safari, safari push, chrome
-Requires at least: 4.6
-Tested up to: 6.5
-Stable tag: trunk
+Contributors: subscribers, mahendrachoudhary
+Tags: push notifications, web push, notifications, subscribe, subscribers
+Requires at least: 5.2
+Tested up to: 6.8
+Requires PHP: 7.4
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,7 +28,7 @@ After setup, your visitors can opt-in to receive push notifications when you pub
 
 Send as many notifications as you'd like. There are no limits, even on the free accounts.
 
-A Subscribers account is required to use the service. [Please sign up for free here](http://app.subscribers.com/users/signup)
+A Subscribers account is required to use the service. [Please sign up for free here](https://app.subscribers.com/users/signup)
 
 
 == Installation ==
@@ -37,15 +38,15 @@ Installation is plain and simple:
 * Next, activate the plugin.
 * Then under your Settings menu tab in your Wordpress admin site, click on the Subscribers submenu and follow the instructions on the plugin settings page
 
-A Subscribers account is required to use the service. [Please sign up for free here](http://app.subscribers.com/users/signup)
+A Subscribers account is required to use the service. [Please sign up for free here](https://app.subscribers.com/users/signup)
 
 
 == Screenshots ==
 
 1. Examples of browser push notifications
 2. Examples of browser push notifications
-3. Subscribers perforamce view
-4. Notifications perforamce view
+3. Subscribers performance view
+4. Notifications performance view
 5. Welcome drip campaign
 6. Testimonial
 
@@ -56,7 +57,7 @@ A Subscribers account is required to use the service. [Please sign up for free h
 1. Search for 'Subscribers' in your plugin directory, when you find it click on Install
 2. Go to the list of your installed plugins and click Activate
 3. Once the plugin is activated all you need to do is provide us with your Site ID from your Subscribers.com account
-4. If you do not have an account yet [please sign up for free here.](http://app.subscribers.com/users/signup)
+4. If you do not have an account yet [please sign up for free here.](https://app.subscribers.com/users/signup)
 5. Then sign into your Subscribers.com dashboard to copy your [Site ID from this page](https://app.subscribers.com/settings)
 6. Migrate back to Wordpress and paste your Site ID into your Subscribers settings and click Save. *You can get to the Subscribers settings page by clicking on Plugins and then looking for the link to our settings page under our plugin name*
 7. Once you click save, the javascript code should be installed and your site should now have the default chicklet installed on it
@@ -89,6 +90,12 @@ Yes, the plugin needs to be installed separately on each of your websites. If yo
 
 
 == Changelog ==
+
+= 1.6 =
+* Compatibility test with WordPress version 6.8, ready for WP 6.8
+* Compatibility with PHP 8.1 and above
+* Security improvements
+* Bug fixes and performance improvements
 
 = 1.5.5 =
 * Capability test with wordpress version 6.5, ready for WP 6.5
