@@ -6,7 +6,7 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.7.1
+Version: 1.7.3
 Requires at least: 5.2
 Requires PHP: 7.4
 Author URI: https://subscribers.com
@@ -44,7 +44,8 @@ $subscribers_embed_script = <<<HTML
 <!-- Start Subscriber Embed Code -->
 <script type="text/javascript">
 var subscribersSiteId = 'SUBSCRIBER_ID';
-var subscribersServiceWorkerPath = '/firebase-messaging-sw.js';
+var subscribersServiceWorkerPath = '/?firebase-messaging-sw';
+var subscribersServiceWorkerScope = '/';
 </script>
 <script type="text/javascript" src="https://$subscribers_cdn_host/assets/subscribers.js"></script>
 <!-- End Subscriber Embed Code -->
@@ -120,11 +121,19 @@ function subscribers_query_vars($vars) {
 // Served at `/?firebase-messaging-sw`. Needs to be at the top level in order
 // to be registered at the correct scope.
 function subscribers_service_worker($query) {
-  if ( isset( $query->query_vars['firebase-messaging-sw'] ) ) {
-    header( 'Content-Type: application/javascript' );
-    include( 'firebase-messaging-sw.js.php' );
-    exit;
-  }
+  $is_sw_request =
+    isset($query->query_vars['firebase-messaging-sw']) ||
+    array_key_exists('firebase-messaging-sw', $_GET);
+  if (!$is_sw_request) return;
+  if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
+  if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
+  if (!defined('DONOTCACHEDB')) define('DONOTCACHEDB', true);
+  nocache_headers();
+  status_header(200);
+  header('Content-Type: application/javascript; charset=UTF-8');
+  header('X-Robots-Tag: noindex, nofollow', true);
+  include plugin_dir_path(__FILE__) . 'firebase-messaging-sw.js.php';
+  exit;
 }
 
 //------------------------------------------------------------------------//
