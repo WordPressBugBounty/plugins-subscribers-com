@@ -6,7 +6,7 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.7
+Version: 1.7.1
 Requires at least: 5.2
 Requires PHP: 7.4
 Author URI: https://subscribers.com
@@ -44,7 +44,7 @@ $subscribers_embed_script = <<<HTML
 <!-- Start Subscriber Embed Code -->
 <script type="text/javascript">
 var subscribersSiteId = 'SUBSCRIBER_ID';
-var subscribersServiceWorkerPath = '/?firebase-messaging-sw.js';
+var subscribersServiceWorkerPath = '/firebase-messaging-sw.js';
 </script>
 <script type="text/javascript" src="https://$subscribers_cdn_host/assets/subscribers.js"></script>
 <!-- End Subscriber Embed Code -->
