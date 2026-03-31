@@ -5,7 +5,7 @@ Tags: push notifications, web push, notifications, subscribe, subscribers
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.7.3
+Stable tag: 1.7.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,12 @@ Yes, the plugin needs to be installed separately on each of your websites. If yo
 
 
 == Changelog ==
+
+= 1.7.5 = 
+* Fixed site language issue
+
+= 1.7.4 = 
+* Fixed version to the service worker
 
 = 1.7.3 = 
 * Fixed no need root file

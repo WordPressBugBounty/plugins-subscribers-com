@@ -6,7 +6,7 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.7.3
+Version: 1.7.5
 Requires at least: 5.2
 Requires PHP: 7.4
 Author URI: https://subscribers.com
@@ -39,12 +39,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //------------------------------------------------------------------------//
 
 require_once("config.php");
+$subscribers_sw_direct_url = plugins_url('firebase-messaging-sw.js.php', __FILE__);
 
 $subscribers_embed_script = <<<HTML
 <!-- Start Subscriber Embed Code -->
 <script type="text/javascript">
 var subscribersSiteId = 'SUBSCRIBER_ID';
-var subscribersServiceWorkerPath = '/?firebase-messaging-sw';
+var subscribersServiceWorkerPath = '{$subscribers_sw_direct_url}?sw=1';
 var subscribersServiceWorkerScope = '/';
 </script>
 <script type="text/javascript" src="https://$subscribers_cdn_host/assets/subscribers.js"></script>
@@ -110,27 +111,67 @@ function subscribers_plugin_redirect() {
 //------------------------------------------------------------------------//
 //---Serving service worker-----------------------------------------------//
 //------------------------------------------------------------------------//
-add_action( 'parse_request', 'subscribers_service_worker' );
+// Use `init` (priority 0) instead of `parse_request`: newer WordPress and
+// some hosts handle query parsing / caching differently; `init` runs for
+// every front-end request with $_GET available and avoids missing the SW URL.
+add_action( 'init', 'subscribers_service_worker', 0 );
 add_filter( 'query_vars', 'subscribers_query_vars' );
+// Stop canonical redirects from turning `/?firebase-messaging-sw` into `/`
+// (that yields HTML and breaks SW registration on newer WP).
+add_filter( 'redirect_canonical', 'subscribers_prevent_canonical_for_sw', 10, 2 );
 
 function subscribers_query_vars($vars) {
   $vars[] = 'firebase-messaging-sw';
   return $vars;
 }
 
+/**
+ * True when this HTTP request should return the Firebase messaging service worker script.
+ */
+function subscribers_is_service_worker_request() {
+  if ( array_key_exists( 'firebase-messaging-sw', $_GET ) ) {
+    return true;
+  }
+  if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+    return false;
+  }
+  $uri    = wp_unslash( (string) $_SERVER['REQUEST_URI'] );
+  $q_mark = strpos( $uri, '?' );
+  if ( false === $q_mark ) {
+    return false;
+  }
+  $qs = array();
+  wp_parse_str( substr( $uri, $q_mark + 1 ), $qs );
+  return array_key_exists( 'firebase-messaging-sw', $qs );
+}
+
+/**
+ * @param string|false $redirect_url  Canonical URL WordPress wants to redirect to.
+ * @param string       $requested_url Requested URL.
+ */
+function subscribers_prevent_canonical_for_sw( $redirect_url, $requested_url ) {
+  if ( subscribers_is_service_worker_request() ) {
+    return false;
+  }
+  return $redirect_url;
+}
+
 // Served at `/?firebase-messaging-sw`. Needs to be at the top level in order
 // to be registered at the correct scope.
-function subscribers_service_worker($query) {
-  $is_sw_request =
-    isset($query->query_vars['firebase-messaging-sw']) ||
-    array_key_exists('firebase-messaging-sw', $_GET);
-  if (!$is_sw_request) return;
+function subscribers_service_worker() {
+  if ( is_admin() ) {
+    return;
+  }
+  if ( ! subscribers_is_service_worker_request() ) {
+    return;
+  }
   if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
   if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
   if (!defined('DONOTCACHEDB')) define('DONOTCACHEDB', true);
   nocache_headers();
   status_header(200);
   header('Content-Type: application/javascript; charset=UTF-8');
+  header('X-Subscribers-SW: 1', true);
   header('X-Robots-Tag: noindex, nofollow', true);
   include plugin_dir_path(__FILE__) . 'firebase-messaging-sw.js.php';
   exit;
