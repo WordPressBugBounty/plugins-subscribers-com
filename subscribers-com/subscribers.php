@@ -6,7 +6,7 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.7.5
+Version: 1.7.7
 Requires at least: 5.2
 Requires PHP: 7.4
 Author URI: https://subscribers.com
@@ -39,13 +39,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 //------------------------------------------------------------------------//
 
 require_once("config.php");
-$subscribers_sw_direct_url = plugins_url('firebase-messaging-sw.js.php', __FILE__);
 
 $subscribers_embed_script = <<<HTML
 <!-- Start Subscriber Embed Code -->
 <script type="text/javascript">
 var subscribersSiteId = 'SUBSCRIBER_ID';
-var subscribersServiceWorkerPath = '{$subscribers_sw_direct_url}?sw=1';
+var subscribersServiceWorkerPath = '/?firebase-messaging-sw';
 var subscribersServiceWorkerScope = '/';
 </script>
 <script type="text/javascript" src="https://$subscribers_cdn_host/assets/subscribers.js"></script>
@@ -165,6 +164,11 @@ function subscribers_service_worker() {
   if ( ! subscribers_is_service_worker_request() ) {
     return;
   }
+  // firebase-messaging-sw.js.php does require_once(config.php); since config.php
+  // was already require_once'd at plugin bootstrap (global scope), that second
+  // call is a no-op and $subscribers_cdn_host would otherwise be undefined here,
+  // producing "https:///assets/subscribers-sw.js". Pull the global in explicitly.
+  global $subscribers_cdn_host;
   if (!defined('DONOTCACHEPAGE')) define('DONOTCACHEPAGE', true);
   if (!defined('DONOTCACHEOBJECT')) define('DONOTCACHEOBJECT', true);
   if (!defined('DONOTCACHEDB')) define('DONOTCACHEDB', true);

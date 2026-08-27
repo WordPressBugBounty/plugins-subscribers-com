@@ -5,7 +5,7 @@ Tags: push notifications, web push, notifications, subscribe, subscribers
 Requires at least: 5.2
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.7.5
+Stable tag: 1.7.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,12 @@ Yes, the plugin needs to be installed separately on each of your websites. If yo
 
 
 == Changelog ==
+
+= 1.7.7 =
+* Fixed service worker CDN script failing to load ("https:///assets/subscribers-sw.js", empty host) after the 1.7.6 fix restored the root-level service worker endpoint. Caused by config.php being require_once'd twice -- once at plugin bootstrap (global scope) and once inside the service worker handler function (local scope) -- so the second call was silently skipped and $subscribers_cdn_host was never set inside that function. Fixed by explicitly pulling in the global before including the service worker file.
+
+= 1.7.6 =
+* Fixed service worker registration failing (404) on sites with a renamed or non-default wp-content directory, PHP execution restrictions in the plugins folder, or aggressive page caching. The embed script's service worker path was pointed at a direct plugin-folder file in 1.7.5; it now uses the hardened root-level endpoint (`/?firebase-messaging-sw`) instead, which is unaffected by content-directory renaming and is not blocked by hosts/plugins that disallow direct PHP execution inside wp-content/plugins. No other 1.7.5 changes are affected.
 
 = 1.7.5 = 
 * Fixed site language issue
