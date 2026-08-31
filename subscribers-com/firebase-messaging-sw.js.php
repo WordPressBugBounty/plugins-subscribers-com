@@ -8,5 +8,5 @@ $site_lang = function_exists('swpush_sanitize')
   : htmlspecialchars((string)$site_lang_raw, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 ?>
 var siteLanguage = "<?php echo $site_lang; ?>";
-var version = '1.7.7';
+var version = '1.7.8';
 importScripts("https://<?php echo $subscribers_cdn_host; ?>/assets/subscribers-sw.js");

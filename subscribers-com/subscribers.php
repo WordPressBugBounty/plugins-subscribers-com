@@ -6,7 +6,7 @@ Description: Subscribers.com lets you send push notifications from your desktop 
 Simply enable the plugin and start collecting subscribers for your Subscribers account.
 Visit <a href="https://subscribers.com/">Subscribers</a> for more details.
 Author: Subscribers.com
-Version: 1.7.7
+Version: 1.7.9
 Requires at least: 5.2
 Requires PHP: 7.4
 Author URI: https://subscribers.com
@@ -17,7 +17,7 @@ This relies on the actions being present in the themes header.php and footer.php
 * header.php code before the closing </head> tag
 *   wp_head();
 *
-Copyright (C) 2025 Subscribers.com
+Copyright (C) 2026 Subscribers.com
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ $subscribers_embed_script = <<<HTML
 <!-- Start Subscriber Embed Code -->
 <script type="text/javascript">
 var subscribersSiteId = 'SUBSCRIBER_ID';
-var subscribersServiceWorkerPath = '/?firebase-messaging-sw';
+var subscribersServiceWorkerPath = '/firebase-messaging-sw.js';
 var subscribersServiceWorkerScope = '/';
 </script>
 <script type="text/javascript" src="https://$subscribers_cdn_host/assets/subscribers.js"></script>
@@ -134,7 +134,16 @@ function subscribers_is_service_worker_request() {
   if ( empty( $_SERVER['REQUEST_URI'] ) ) {
     return false;
   }
-  $uri    = wp_unslash( (string) $_SERVER['REQUEST_URI'] );
+  $uri  = wp_unslash( (string) $_SERVER['REQUEST_URI'] );
+  $path = strtok( $uri, '?' );
+
+  // Clean path used by new installs — not blocked by CloudFront WAF.
+  if ( $path === '/firebase-messaging-sw.js' ) {
+    return true;
+  }
+
+  // Legacy query-param path (?firebase-messaging-sw) kept for backward compat
+  // with browsers that already have the old service worker URL registered.
   $q_mark = strpos( $uri, '?' );
   if ( false === $q_mark ) {
     return false;
@@ -155,8 +164,8 @@ function subscribers_prevent_canonical_for_sw( $redirect_url, $requested_url ) {
   return $redirect_url;
 }
 
-// Served at `/?firebase-messaging-sw`. Needs to be at the top level in order
-// to be registered at the correct scope.
+// Served at `/firebase-messaging-sw.js` (and legacy `/?firebase-messaging-sw`).
+// Needs to be at root level for correct service worker scope.
 function subscribers_service_worker() {
   if ( is_admin() ) {
     return;

@@ -3,9 +3,9 @@
 Contributors: subscribers, mahendrachoudhary
 Tags: push notifications, web push, notifications, subscribe, subscribers
 Requires at least: 5.2
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.7
+Stable tag: 1.7.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,12 @@ Yes, the plugin needs to be installed separately on each of your websites. If yo
 
 
 == Changelog ==
+
+= 1.7.9 =
+* Compatibility test with WordPress version 7.1, ready for WP 7.1
+
+= 1.7.8 =
+* Fixed service worker requests getting blocked (403) behind CloudFront WAF, which flags value-less query parameters like `?firebase-messaging-sw` as suspicious. The embed script now points at a clean path, `/firebase-messaging-sw.js`, which CloudFront does not block. The legacy `/?firebase-messaging-sw` URL is still recognized and served, so browsers that already registered the old service worker URL keep working without re-registering.
 
 = 1.7.7 =
 * Fixed service worker CDN script failing to load ("https:///assets/subscribers-sw.js", empty host) after the 1.7.6 fix restored the root-level service worker endpoint. Caused by config.php being require_once'd twice -- once at plugin bootstrap (global scope) and once inside the service worker handler function (local scope) -- so the second call was silently skipped and $subscribers_cdn_host was never set inside that function. Fixed by explicitly pulling in the global before including the service worker file.
